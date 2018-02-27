@@ -1,0 +1,6 @@
+exclude.txt
+test.py
+pycltest.py
+*.json
+*.sh
+venv*

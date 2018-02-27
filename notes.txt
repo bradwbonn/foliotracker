@@ -1,0 +1,144 @@
+
+    #   Functions needed:
+
+    # Log in / log out - DONE
+    
+    # register user (future only, currently manually handled)
+    #   Requires an invite code, email, username, password
+    #   Creates their personal DB
+    #   Creates their personal API key
+    #   Builds views in DB
+    #   Show acceptable use agreement
+    
+    # Input transaction
+    # - trade
+    # - deposit
+    # - withdrawl
+    # - dividend / reinvest
+    
+    # update RBPI values, stocks, categories (portfolio JSON)
+    
+    # print current state of portfolio:
+    # - obtain current stock prices from stock API
+    # - distribution percentages
+    # - flag buy opportunities
+    # - flag overages
+    # - value changes since purchase
+    
+    # List transactions
+
+    # JSON Structures:
+
+    # portfolio
+    #{
+    #  "_id": "RBPI-TRP"
+    #  "type": "portfolio",
+    #  "name": "Total Return Portfolio",
+    #  "categories": {
+    #       "Stocks": {
+    #           "World-Class Franchises": 6,
+    #           "Indexed Equities": 22,
+    #           "Growth & Income Plays": 16,
+    #           "Real Estate Investment Trusts": 6,
+    #           "Toll Takers": 4
+    #       },
+    #       "Fixed Income": {
+    #           "Multisector Bonds": 10,
+    #           "Intermediate Credit Bonds": 11,
+    #           "Preferred Stocks": 5,
+    #           "Cash": 16
+    #       }
+    #   }
+    #}
+    
+    # stock
+    #{
+    #    "type": "stock",
+    #    "symbol": "DLR",
+    #    "buybelow": 100,
+    #    "name": "Digital Realty Trust",
+    #    "category": "Real Estate Investment Trusts", #(Use "Other" for non-recommended equities)
+    #    "active": true,
+    #    "comments": "Low-risk play on explosive growth of cloud computing, at home and abroad",
+    #    "updated": "2018-02-10"
+    #}
+    
+    # transaction
+    #{
+    #    "type": "transaction",
+    #    "action": "buy", # (sell, deposit, withdrawl, dividend, reinvest)
+    #    "symbol": "DLR",
+    #    "price": 102.21,
+    #    "quantity": 10, 
+    #    "date": "2018-02-10 12:00:00", #(YYYY-MM-DD HH:MM:SS or UTC Timestamp)
+    #}
+    
+    # login
+    #{
+    #    'type': 'login',
+    #    '_id': 'bradbonn',
+    #    'passwordhash': '',
+    #    'database': 'investfolio-bradbonn'
+    #}
+    
+        ## cached folio state doc structure:
+    #{
+    #    "_id": "folioname-<timestamp>",
+    #    "type": "foliocache",
+    #    "portfolio_categories": [
+    #        {
+    #            "type": "Indexed Equities",
+    #            "target_percentage": 22,
+    #            "actual_percentage": 11,
+    #            "value": (total value of holdings),
+    #            "holdings": [
+    #                {
+    #                    "symbol": "VDX",
+    #                    "name": "Vangaurd blah blah",
+    #                    "price": 124.41,
+    #                    "buy_below": 120,
+    #                    "qty": 10,
+    #                    "comments": "Lorem Ipsum",
+    #                    "value": (price * qty)
+    #                },
+    #                {
+    #                    "name": "holding 2"
+    #                }
+    #            ]
+    #        },
+    #        {
+    #            "type": "..."
+    #        }
+    #    ]
+    #}
+    
+    ## The "holdings" dict is being used somewhere...
+    #def get_bulk_stock_prices(symbols, holdings):
+    #    start_time = time()
+    #    apikey = str(os.getenv('STOCKAPI'))
+    #    symbols_string = ''
+    #    for symbol in symbols:
+    #        if symbol <> "Cash":
+    #            symbols_string = symbols_string + "{0},".format(symbol)
+    #    # trim last comma
+    #    symbols_string = symbols_string[:-1]
+    #    
+    #    myurl = "https://www.alphavantage.co/query?function=BATCH_STOCK_QUOTES&symbols={0}&apikey={1}".format(
+    #        symbols_string,
+    #        apikey
+    #    )
+    #    try:
+    #        r = requests.get(
+    #            url = myurl
+    #        )
+    #        data = r.json()
+    #        #return float(data['Stock Quotes'][0]['2. price'])
+    #        end_time = time()
+    #        for stock_data in data['Stock Quotes']:
+    #            # set the price of the holding in question
+    #            holdings[stock_data['1. symbol']][1] = float(stock_data['2. price'])
+    #        print_local("Stock API query time: {0} seconds".format(float(end_time - start_time)))
+    #                    
+    #    except Exception as e:
+    #        print_local("Unable to get stock prices: {0}".format(e))
+    #        return -1
