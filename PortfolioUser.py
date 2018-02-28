@@ -41,6 +41,11 @@ class PortfolioUser:
                         view = "owned",
                         map_func = "function (doc) {var amount;if (doc.type === 'transaction') {if (doc.action === 'buy') {amount = doc.quantity;} else if (doc.action === 'sell') {amount = doc.quantity * -1;}emit([doc.symbol,doc.date,doc.action,doc.price], amount);}}",
                         reduce_func = "_sum"
+                    ),
+                    dict(
+                        view = "manualquotes",
+                        map_func = "function (doc) {if (doc.type === 'manualquote') {emit([doc.symbol,doc.date], doc.price);}}",
+                        reduce_func = "_stats"
                     )
                 ]
             ),

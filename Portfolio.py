@@ -34,6 +34,7 @@ class Portfolio:
         self.bycategory_view = self.stockddoc.get_view('bycategory')
         self.owned_view = self.stockddoc.get_view('owned')
         self.allowned_view = self.stockddoc.get_view('allowned')
+        self.manualquote_view = self.stockddoc.get_view('manualquotes')
         self.folio_ddoc = DesignDocument(self.db, 'activefolios')
         self.folio_ddoc.fetch()
         self.active_folios_view = self.folio_ddoc.get_view('currentfolio')
@@ -129,7 +130,15 @@ class Portfolio:
         
     def refresh_all_stock_prices(self):
         print("Portfolio.refresh_all_stock_prices()")
-            
+        
+        # Iterate through manual stock quotes in DB first (to cover stock API brokenness)
+        with self.manualquote_view.custom_result(reduce=False) as rslt:
+            manual_quotes = rslt[: ]
+            for row in manual_quotes:
+                symbol = row['key'][0]
+                date = row['key'][1]
+                self.stocks[symbol]['lastprice'] = row['value']
+                
         # construct string for API call
         symbols_string = ''
         for symbol in self.stocks.keys():
@@ -153,8 +162,9 @@ class Portfolio:
             end_time = time()
             for stock_data in data['Stock Quotes']:
                 # set the price of the holding in question
-                print "Quote for {0}: {1}".format(stock_data['1. symbol'], stock_data)
-                self.stocks[stock_data['1. symbol']]['lastprice'] = float(stock_data['2. price'])
+                # print "Quote for {0}: {1}".format(stock_data['1. symbol'], stock_data)
+                if float(stock_data['2. price']) <> 0.0:
+                    self.stocks[stock_data['1. symbol']]['lastprice'] = float(stock_data['2. price'])
             print("Stock API query time: {0} seconds".format(float(end_time - start_time)))
             self.prices_last_updated = int(time())
             return True
