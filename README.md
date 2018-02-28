@@ -5,3 +5,8 @@ Uses Cloudant map-reduce views for event sourcing of transactions, and storage o
 Embedded credentials in a local file, or using environment variables.
 
 Designed to be deployed in IBM Cloud (formerly Bluemix) for demonstration purposes of how to code a more advanced set of functions in Cloudant with Python.
+
+## Still to-do:
+* Add user management feature (admin console)
+* Add ability to edit/delete transactions
+* Make CSS much more pretty and forms more consistent
