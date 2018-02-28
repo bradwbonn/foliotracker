@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
 # BUGS:
-# - New transaction "deposit" causes duplicate entry in DB
-# - Selecting "No" still causes trades to be executed against cash balanace
 
 from cloudant import Cloudant
 from cloudant.document import Document
@@ -154,7 +152,8 @@ class Portfolio:
             data = r.json()
             end_time = time()
             for stock_data in data['Stock Quotes']:
-                # set the price of the holding in question 
+                # set the price of the holding in question
+                print "Quote for {0}: {1}".format(stock_data['1. symbol'], stock_data)
                 self.stocks[stock_data['1. symbol']]['lastprice'] = float(stock_data['2. price'])
             print("Stock API query time: {0} seconds".format(float(end_time - start_time)))
             self.prices_last_updated = int(time())
@@ -205,7 +204,7 @@ class Portfolio:
     def trade(self, symbol, quantity, price, fee, action, usebalance):
         print ("Portfolio.trade()")
         self.new_transaction_doc(symbol, quantity, price, fee, action)
-        if usebalance == True:
+        if (usebalance == True and symbol <> "Cash"):
             cashqty = (quantity * price) + fee
             if action == 'buy':
                 cashaction = 'withdrawl'

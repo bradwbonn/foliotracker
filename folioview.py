@@ -223,7 +223,7 @@ def transaction():
                 float(request.form['price']),
                 float(request.form['fee']),
                 str(request.form['action']),
-                bool(request.form['usebalance'])
+                bool(int(request.form['usebalance']))
             )
             if message <> None:
                 return render_template('trade.html', message = "Error: {0}".format(message))
