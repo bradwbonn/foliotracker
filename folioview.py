@@ -8,12 +8,13 @@ from cloudant.design_document import DesignDocument
 from cloudant.adapters import Replay429Adapter
 from flask import Flask, render_template, request, jsonify, session, flash, redirect
 from time import sleep, strftime, time
-import atexit, cf_deployment_tracker, os, json, requests
+import atexit, cf_deployment_tracker, os, json, requests, sys
 from Portfolio import Portfolio
 from PortfolioUser import PortfolioUser
 
 # To-do:
-# admin console, function to delete transactions, fix transaction table formatting, add transaction total value to line
+# admin console, function to delete transactions, fix transaction table formatting, add transaction total value to line,
+# add marker for buy triggers, beautify HTML
 
 # Enable active "log" when testing on local machine        
 def print_local(output):
@@ -47,13 +48,17 @@ if 'VCAP_SERVICES' in os.environ:
         user = creds['username']
         password = creds['password']
         url = 'https://' + creds['host']
-        client = Cloudant(
-            user,
-            password,
-            url=url,
-            connect=True,
-            adapter=Replay429Adapter(retries=10, initialBackoff=0.005)
-        )
+        try:
+            client = Cloudant(
+                user,
+                password,
+                url=url,
+                connect=True,
+                adapter=Replay429Adapter(retries=10, initialBackoff=0.005)
+            )
+        except Exception as e:
+            print "Unable to connect to Cloudant: {0}".format(e)
+            sys.exit()
 elif os.path.isfile('vcap-local.json'):
     with open('vcap-local.json') as f:
         vcap = json.load(f)
@@ -62,12 +67,16 @@ elif os.path.isfile('vcap-local.json'):
         user = creds['username']
         password = creds['password']
         url = 'https://' + creds['host']
-        client = Cloudant(user,
-            password,
-            url=url,
-            connect=True,
-            adapter=Replay429Adapter(retries=10, initialBackoff=0.001)
-        )
+        try:
+            client = Cloudant(user,
+                password,
+                url=url,
+                connect=True,
+                adapter=Replay429Adapter(retries=10, initialBackoff=0.001)
+            )
+        except Exception as e:
+            print "Unable to connect to Cloudant: {0}".format(e)
+            sys.exit()
 else:
     print('ERROR: No Cloudant connection information available!')
     sys.exit()
@@ -200,15 +209,23 @@ def list_transactions():
             )
         else:
             previouspage = ""
-            
+        
+        # print transaction_list
+        
         return render_template(
-            'transactions.html',
+            'transactions2.html',
             transactions = transaction_list,
             prev = previouspage,
-            next = nextpage
+            next = nextpage,
+            portfolioname = currentPortfolio.name
         )
     else:
         return redirect(main_url)
+
+# HTML tester
+@app.route("/test", methods=['GET'])
+def test():
+    return render_template('test.html')
 
 # Execute trade
 @app.route("/trade", methods=['POST','GET'])
@@ -244,7 +261,9 @@ def home():
             'folio2.html',
             portfolioname = currentPortfolio.name,
             portfoliodata = currentPortfolio.get_template_data(),
-            portfoliovalue = "{0:,.2f}".format(currentPortfolio.total_portfolio_value)
+            portfoliovalue = "{0:,.2f}".format(currentPortfolio.total_portfolio_value),
+            foliostatus = currentPortfolio.status,
+            foliouser = currentUser.username
         )
 
 # Flask runtime execution and shutdown functions    

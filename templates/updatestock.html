@@ -1,41 +1,52 @@
 <link rel="stylesheet" href="/static/style.css" type="text/css">
 {% block body %}
- 
+
+<head>
+	<!-- Bootstrap -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link href="static/style.css" rel="stylesheet">
+</head>
 <form action="/updatestock?symbol={{ stock.symbol }}" method="POST">
-	<div class="stock">
-		<div class="stock-screen">
-			<div class="app-title">
-				<h1>Update existing tracked stock</h1>
-			</div>
- 
-			<div class="login-form">
-				<div class="control-group">
-				<h2>{{ stock.symbol }}</h2>
-<!--				<label class="login-field-icon fui-user" for="login-name"></label>-->
-				</div>
- 				<div class="control-group">
-				Stock Name:<input type="text" class="stock-field" value="{{ stock.name }}" name="name">
-<!--				<label class="login-field-icon fui-user" for="login-name"></label>-->
-				</div>
-				<div class="control-group">
-				Buy Below:<input type="number" class="stock-field" value={{ stock.buybelow }} name="buybelow">
-<!--				<label class="login-field-icon fui-lock" for="login-pass"></label>-->
-				</div>
-                                <div class="control-group">
-                                <div>Active</div>
-                                <div>
-                                <input type="radio" name="active" value=true checked> Yes<br>
-                                <input type="radio" name="active" value=false> No
-                                </div>
-                                <div class="control-group">
-                                    Comments:<input type="text" class="stock-field" value="{{ stock.comments }}" name="comments">
-                                </div>
-                <input type="submit" value="Update Stock Tracker" class="btn btn-primary btn-large btn-block" >
-			    <br>
-			</div>
+	<div class="container-fluid">
+		<div class="app-title">
+			<h1>Update existing tracked stock</h1>
 		</div>
-		<div><a href="/">Cancel</a></div>
+		<div class="row col-md-12">
+			<div class="col-md-2">Symbol</div>
+			<h2>{{ stock.symbol }}</h2>
+		</div>
+		<div class="row col-md-12">
+			<div class="col-md-2">Stock Name</div>
+			<div class="col-md-10"><input type="text" class="commentfield" value="{{ stock.name }}" name="name"></div>
+		</div>
+		<div class="row col-md-12">
+			<div class="col-md-2">Buy Below</div>
+			<div class="col-md-4"><input type="number" value={{ stock.buybelow }} name="buybelow"></div>
+			<div class="col-md-2">Active</div>
+			<div class="col-md-1"><input type="radio" name="active" value=true checked>Yes</div>
+			<div class="col-md-1"><input type="radio" name="active" value=false>No</div>
+			<div class="col-md-12"></div>
+		</div>
+		<div class="row col-md-12">
+		    <div class="col-md-2">Comments</div>
+		    <div class="col-md-10"><input type="text" class="commentfield" value="{{ stock.comments }}" name="comments"></div>
+		</div>
+		<div class="row col-md-12">
+			<div class="col-md-3">
+				<input type="submit" value="Update Stock Tracker" class="btn" >
+			</div>
+			<div class="col-md-2">
+				<a href="/" class="btn">Cancel</a>
+			</div>
+			<div class="col-md-7"></div>
+		</div>
 	</div>
 </form>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
  
 {% endblock %}

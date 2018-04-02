@@ -1,23 +1,23 @@
-* {
-box-sizing: border-box;
-}
- 
 *:focus {
 	outline: none;
+	background-color: #f5f5f5;
 }
+
 body {
-font-family: Arial;
-background-color: #3498DB;
-padding: 50px;
+	font-family: Arial;
+	background-color: #3498DB;
+	padding: 50px;
 }
+
 .login {
-margin: 20px auto;
-width: 300px;
+	margin: 20px auto;
+	width: 300px;
 }
+
 .login-screen {
-background-color: #FFF;
-padding: 20px;
-border-radius: 5px
+	background-color: #FFF;
+	padding: 20px;
+	border-radius: 5px
 }
 
 table {
@@ -33,7 +33,11 @@ table {
 .categoryheader {
 	font-weight: bolder;
 	border: 2px hidden;
-	text-align: right;
+}
+
+.dropdown {
+	position: relative;
+	width: auto;
 }
 
 .stockheader {
@@ -61,11 +65,13 @@ tr.header {
 	font-size: 22px;
 }
  
-.stockrow:hover {background-color: #f5f5f5;}
+.stockrow:hover {
+	background-color: #c1d9ff;
+}
  
 .app-title {
-text-align: center;
-color: #777;
+	text-align: center;
+	color: #777;
 }
  
 .login-form {
@@ -75,51 +81,164 @@ color: #777;
 .trade-form {
 	text-align: center;
 }
+
 .control-group {
-margin-bottom: 10px;
-}
- 
-input {
-text-align: center;
-background-color: #ECF0F1;
-border: 2px solid transparent;
-border-radius: 3px;
-font-size: 16px;
-font-weight: 200;
-padding: 10px 0;
-width: 250px;
-transition: border .5s;
+	margin-bottom: 10px;
 }
  
 input:focus {
-border: 2px solid #3498DB;
-box-shadow: none;
+	border: 2px solid #3498DB;
+	box-shadow: none;
+}
+
+ 
+.btn:hover {
+  background-color: #45a049;
 }
  
 .btn {
-  border: 2px solid transparent;
-  background: #3498DB;
-  color: #ffffff;
-  font-size: 16px;
-  line-height: 25px;
-  padding: 10px 0;
-  text-decoration: none;
-  text-shadow: none;
-  border-radius: 3px;
-  box-shadow: none;
-  transition: 0.25s;
-  display: block;
-  width: 250px;
-  margin: 0 auto;
-}
- 
-.btn:hover {
-  background-color: #2980B9;
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
 }
  
 .login-link {
-  font-size: 12px;
+  font-size: 14px;
   color: #444;
   display: block;
-	margin-top: 12px;
+  margin-top: 12px;
+}
+
+/* Added for form clean-up */
+
+/* Style inputs with type="text", select elements and textareas */
+input[type=text], textarea {
+    padding: 8px; /* Some padding */  
+    /* border: 1px solid #ccc; /* Gray border */
+    border-radius: 4px; /* Rounded borders */
+    box-sizing: border-box; /* Make sure that padding and width stays in place */
+    margin-top: 6px; /* Add a top margin */
+    margin-bottom: 6px; /* Bottom margin */
+    /* resize: vertical /* Allow the user to vertically resize the textarea (not horizontally) */
+}
+
+.commentfield {
+	width: 100%;
+}
+
+input[type=float] {
+	padding: 8px;
+	border-radius: 4px;
+	margin-top: 6px; /* Add a top margin */
+	margin-bottom: 6px; /* Bottom margin */
+	box-sizing: border-box; /* Make sure that padding and width stays in place */
+}
+
+.formlabel {
+	padding: 8px;
+	border-radius: 4px;
+	margin-top: 6px; /* Add a top margin */
+	margin-bottom: 6px; /* Bottom margin */
+	box-sizing: border-box; /* Make sure that padding and width stays in place */
+}
+
+input[type=password] {
+    width: 100%; /* Full width */
+    padding: 12px; /* Some padding */  
+    /* border: 1px solid #ccc; /* Gray border */
+    border-radius: 4px; /* Rounded borders */
+    /* box-sizing: border-box; /* Make sure that padding and width stays in place */
+    margin-top: 6px; /* Add a top margin */
+    margin-bottom: 6px; /* Bottom margin */
+    /* resize: vertical /* Allow the user to vertically resize the textarea (not horizontally) */
+}
+
+.login-field {
+    width: 100%; /* Full width */
+    padding: 12px; /* Some padding */  
+    /* border: 1px solid #ccc; /* Gray border */
+    border-radius: 4px; /* Rounded borders */
+    /* box-sizing: border-box; /* Make sure that padding and width stays in place */
+    margin-top: 6px; /* Add a top margin */
+    margin-bottom: 6px; /* Bottom margin */
+    /* resize: vertical /* Allow the user to vertically resize the textarea (not horizontally) */
+}
+
+input[type=select] {
+    padding: 8px; /* Some padding */  
+    /* border: 1px solid #ccc; /* Gray border */
+    border-radius: 4px; /* Rounded borders */
+    box-sizing: border-box; /* Make sure that padding and width stays in place */
+    margin-top: 6px; /* Add a top margin */
+    margin-bottom: 6px; /* Bottom margin */
+}
+
+/* Style the submit button with a specific background color etc */
+input[type=submit] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* When moving the mouse over the submit button, add a darker green color */
+input[type=submit]:hover {
+    background-color: #45a049;
+}
+
+/* Add a background color and some padding around the form */
+.container-fluid {
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 20px;
+}
+
+/* Create a custom radio button */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: #eee;
+  border-radius: 50%;
+}
+
+/* On mouse-over, add a grey background color */
+.optioncontainer:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+/* When the radio button is checked, add a blue background */
+.optioncontainer input:checked ~ .checkmark {
+  background-color: #2196F3;
+}
+
+/* Create the indicator (the dot/circle - hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the indicator (dot/circle) when checked */
+.optioncontainer input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the indicator (dot/circle) */
+.optioncontainer .checkmark:after {
+  top: 9px;
+  left: 9px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
 }

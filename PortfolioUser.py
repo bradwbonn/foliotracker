@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# BUG: New user database creation not working
+
 from cloudant import Cloudant
 from cloudant.document import Document
 from cloudant.view import View
@@ -29,7 +31,7 @@ class PortfolioUser:
                     ),
                     dict(
                         view = "bycategory",
-                        map_func = "function (doc) {if (doc.type === 'stock') {emit([doc.category,doc.symbol,doc.name,doc.buybelow,doc.comments], 1);}}",
+                        map_func = "function (doc) {if (doc.type === 'stock' && doc.active === true) {emit([doc.category,doc.symbol,doc.name,doc.buybelow,doc.comments], 1);}}",
                         reduce_func = "_count"
                     ),
                     dict(

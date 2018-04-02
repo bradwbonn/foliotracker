@@ -9,10 +9,11 @@ from cloudant.design_document import DesignDocument
 from cloudant.adapters import Replay429Adapter
 from time import time, strftime
 import requests, json
+from os import getenv
 
 class Portfolio:
     def __init__(self, stockAPIkey):
-        print("Portfolio.init()")
+        print("Portfolio.init({0})".format(stockAPIkey))
         self.stocks = dict() # Contains all stocks, both owned and tracked, with all their metadata
             # { symbol: {metadata} }
         self.categories = dict() # Contains major categories with arrays of (sub)categories and their metadata
@@ -20,7 +21,9 @@ class Portfolio:
         self.prices_last_updated = None # Might use this to update prices on a schedule
         self.foliodoc = None # placeholder for Cloudant document that stores portfolio metadata
         self.stockAPIkey = stockAPIkey
+        self.barchartAPIkey = getenv('BARCHART')
         self.total_portfolio_value = 0
+        self.status = ""
         
     def load(self, db, portfolioname):
         print("Portfolio.load()")
@@ -46,14 +49,12 @@ class Portfolio:
         self.refresh_total_value()
         
     # Load available category metadata into memory from DB
-    # *** BROKEN ***  Populating incorrect data
     def populate_categories(self):
         pass
         print("Portfolio.populate_categories()")
         # Load portfolio specification document from DB
         self.foliodoc = Document(self.db, self.name)
         self.foliodoc.fetch()
-        # print("Foliodoc data: (categories field) {0}".format(self.foliodoc['categories']))
         for category in self.foliodoc['categories']:
             # print category
             for subcategory in self.foliodoc['categories'][category].keys():
@@ -63,7 +64,6 @@ class Portfolio:
                     actual = 0,
                     type = category
                 )
-        # print("...loaded: {0}".format(self.categories))
         
     # Populate stock metadata in memory from DB. (tracked and owned)
     def populate_stocks(self):
@@ -95,10 +95,12 @@ class Portfolio:
     def refresh_total_value(self):
         print("Portfolio.refresh_total_value()")
         self.total_portfolio_value = 0
+        
         # Make sure prices are current
-        quote_success = False
-        while quote_success <> True:
-            quote_success = self.refresh_all_stock_prices()
+        quote_success = self.refresh_all_stock_prices()
+        if not quote_success:
+            # Alert user that stock prices are potentially out of date
+            self.status = 'WARNING: Stock price quote error. Data may be out of date.'
         
         # Update quantities of stocks we own
         with self.allowned_view.custom_result(
@@ -128,10 +130,56 @@ class Portfolio:
         print("Portfolio.get_subcategory_list()")
         return self.categories.keys()
         
+    def barchart_quote(self, symbols_string):
+        # execute stock API call (BarChart)
+        start_time = time()
+        myurl = "https://marketdata.websol.barchart.com/getQuote.json"
+        payload = {
+            'apikey': self.barchartAPIkey,
+            'only': 'symbol,name,lastPrice',
+            'symbols': symbols_string,
+            'mode': 'R'
+        }
+        try:
+            r = requests.get(
+                url = myurl,
+                params = payload
+            )
+            print r.text
+            data = r.json()
+            end_time = time()
+            print("Barchart API query time: {0} seconds".format(float(end_time - start_time)))
+            return data
+        except Exception as e:
+            print "Cannot get quotes from BarChart: {0}".format(e)
+            return None
+    
+    def alphavantage_quote(self, symbols_string):
+        start_time = time()
+        myurl = "https://www.alphavantage.co/query"
+        payload = {
+            'function': 'BATCH_STOCK_QUOTES',
+            'symbols': symbols_string,
+            'apikey': self.stockAPIkey
+        }
+        try:
+            r = requests.get(
+                url = myurl,
+                params = payload
+            )
+            data = r.json()
+            end_time = time()
+            print("AlphaVantage API query time: {0} seconds".format(float(end_time - start_time)))
+            return data
+        except Exception as e:
+            print "Cannot get quotes from AlphaVantage: {0}".format(e)
+            return None
+
+        
     def refresh_all_stock_prices(self):
         print("Portfolio.refresh_all_stock_prices()")
         
-        # Iterate through manual stock quotes in DB first (to cover stock API brokenness)
+        # Iterate through manual stock quotes in DB first (to cover missing symbols in stock APIs)
         with self.manualquote_view.custom_result(reduce=False) as rslt:
             manual_quotes = rslt[: ]
             for row in manual_quotes:
@@ -148,29 +196,28 @@ class Portfolio:
         # trim last comma
         symbols_string = symbols_string[:-1]
         
-        # execute stock API call
-        start_time = time()
-        myurl = "https://www.alphavantage.co/query?function=BATCH_STOCK_QUOTES&symbols={0}&apikey={1}".format(
-            symbols_string,
-            self.stockAPIkey
-        )
-        try:
-            r = requests.get(
-                url = myurl
-            )
-            data = r.json()
-            end_time = time()
-            for stock_data in data['Stock Quotes']:
+        ## execute stock API call (BarChart)
+        barchartdata = self.barchart_quote(symbols_string)
+        if barchartdata <> None:
+            pass
+        
+        # Execute stock API call (AlphaVantage)
+        alphavantagedata = self.alphavantage_quote(symbols_string)
+        if alphavantagedata <> None:
+            for stock_data in alphavantagedata['Stock Quotes']:
                 # set the price of the holding in question
-                # print "Quote for {0}: {1}".format(stock_data['1. symbol'], stock_data)
                 if float(stock_data['2. price']) <> 0.0:
                     self.stocks[stock_data['1. symbol']]['lastprice'] = float(stock_data['2. price'])
-            print("Stock API query time: {0} seconds".format(float(end_time - start_time)))
-            self.prices_last_updated = int(time())
-            return True
-        except Exception as e:
-            print("Unable to get stock prices: {0}".format(e))
-            return False
+
+        # Update last quoted time
+        self.prices_last_updated = int(time())
+        
+        # Check for any missing stock prices (any that are not set will be -1)
+        for stock in self.stocks.values():
+            if stock['lastprice'] == -1.0:
+                return False
+            
+        return True
     
     # Create a new doc to track this stock and add it to the dictionary of stock data
     # custom ID is OK, since it prevents duplicate stock trackers
@@ -253,7 +300,7 @@ class Portfolio:
                 doc['active'] = True
             else:
                 doc['active'] = False
-            doc['buybelow'] = int(buybelow)
+            doc['buybelow'] = float(buybelow)
             doc['comments'] = str(comments)
             
             for x in ('updated','name','active','buybelow','comments'):            
@@ -282,7 +329,6 @@ class Portfolio:
     # Return a full state of the portfolio with metadata formatted for the Jinja template's rendering
     def get_template_data(self):
         print "Portfolio.get_template_data()"
-        # returned as "portfolio_categories" in old model
         template_data = dict()
         
         # Iterate through the sub-categories
@@ -296,14 +342,11 @@ class Portfolio:
                 actual_percentage = "{0:,.1f}".format(self.categories[subcategory]['actual']), 
                 holdings = [] # array for all stocks in this subcat
             )
-            
             template_data[subcategory] = subcategory_data
             
         # print template_data
         # Iterate through all tracked stocks in this subcategory
         for stock in self.stocks.keys():
-            # print("Processing {0}: Data from stocks dictionary: {1}".format(stock,self.stocks[stock]))
-            # print_local("Category: {0} Stock: {1}".format(subcategory, stock['symbol']))
             # local dictionary for this stock's data
             stock_data = dict(
                 symbol = self.stocks[stock]['symbol'],
@@ -315,7 +358,6 @@ class Portfolio:
                 value = "$ {0:,.2f}".format(float(self.stocks[stock]['qty'] * self.stocks[stock]['lastprice'])) # value of this security owned
             )
             template_data[self.stocks[stock]['category']]['holdings'].append(stock_data)
-        # print template_data
         return template_data
     
     # Generic event source function for either getting most recent or reduce (simple key only)
@@ -338,20 +380,3 @@ class Portfolio:
     #        with view.result():
     #            return result[key: key]
     
-    ## Get a list of stocks for a given subcategory from the database (legacy)
-    def get_subcategory_stocks(self,subcat):
-    #    print("Portfolio.get_subcategory_stocks()")
-    #    stocklist = []
-    #    with self.bycategory_view.custom_result(reduce=False, include_docs=False) as resultcollection:
-    #        rslt = resultcollection[[subcat, None, None, None, None]: [subcat, {}, {}, {}, {}]]
-    #    for line in rslt:
-    #        stock_info = line['key']
-    #        stock_details = dict(
-    #            symbol = stock_info[1],
-    #            name = stock_info[2],
-    #            buy_below = stock_info[3],
-    #            comments = stock_info[4]
-    #        )
-    #        stocklist.append(stock_details)
-    #    return stocklist
-        pass

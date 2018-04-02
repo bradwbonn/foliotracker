@@ -1,9 +1,9 @@
-<!doctype html><!DOCTYPE html>
+
 <html lang="en">
 
 <head>
-
     <title>My Portfolio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link href="static/style.css" rel="stylesheet">
@@ -17,34 +17,34 @@
 	    <a href='/trade' class="btn">Enter transaction</a>
 	    <a href='/newstock' class="btn">Track new stock</a>
 	    <a href='/logout' class="btn">Logout</a>
-	</h3>
-	
-        <div id="transactions" class="input-group-lg center-block helloInput col-lg-12">
-            {{ portfolioname }}
-	    <div class="category">
-                <div class="row">
-		    <div class="stockheader col-lg-1">Date</div>
-		    <div class="stockheader col-lg-1">Security</div>
-		    <div class="stockheader col-lg-1">Action</div>
-		    <div class="stockheader col-lg-1">Qty</div>
-		    <div class="stockheader col-lg-1">Price</div>
-		    <div class="stockheader col-lg-1">Fee</div>
-		    <div class="stockheader col-lg-6">Transaction ID</div>
-		</div>
-                {% for t in transactions %}
-                <div class="row stockrow">
-                    {% for d in t['key'] %}
-                    <div class="stockline col-lg-1">{{ d }}</div>
-                    {% endfor %}
-                    <div class="stockline col-lg-6">{{ t.id }}</div>
-                </div>
-                {% endfor %}
-            </div>
-            <div>
-                <a href='/transactions?page={{ prev }}'>Previous</a></td><td>---</td><td><a href='/transactions?page={{ next }}'>Next</a>
-            </div>
+        </h3>
+	<div>{{ portfolioname }}</div>
+        
+        <div class="stockheader row">
+            <div class="col-md-2">Date</div>
+            <div class="col-md-1">Security</div>
+            <div class="col-md-1">Action</div>
+            <div class="col-md-1">Qty</div>
+            <div class="col-md-1">Price</div>
+            <div class="col-md-1">Fee</div>
+            <div class="col-md-5">Transaction ID</div>
+        </div>
+        {% for t in transactions %}
+        <div class="row stockrow">
+            <div class="stockline col-md-2">{{ t.key[0] }}</div>
+            <div class="stockline col-md-1">{{ t.key[1] }}</div>
+            <div class="stockline col-md-1">{{ t.key[2] }}</div>
+            <div class="stockline col-md-1">{{ t.key[3] }}</div>
+            <div class="stockline col-md-1">{{ t.key[4] }}</div>
+            <div class="stockline col-md-1">{{ t.key[5] }}</div>
+            <div class="stockline col-md-5">{{ t.id }}</div>
+        </div>
+        {% endfor %}
+        <div>
+            <a href='/transactions?page={{ prev }}'>Previous</a></td><td>---</td><td><a href='/transactions?page={{ next }}'>Next</a>
         </div>
     </div>
+    
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>

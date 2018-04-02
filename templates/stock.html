@@ -1,47 +1,79 @@
-<link rel="stylesheet" href="/static/style.css" type="text/css">
+<head>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/style.css" type="text/css">
+</head>
+
 {% block body %}
  
 <form action="/newstock" method="POST">
 	<div class="stock">
-		<div class="stock-screen">
-			<div class="app-title">
-				<h1>Add a new tracked stock</h1>
-			</div>
- 
-			<div class="login-form">
-				<div class="control-group">
-				<input type="text" class="stock-field" value="" placeholder="symbol" name="symbol">
-<!--				<label class="login-field-icon fui-user" for="login-name"></label>-->
-				</div>
- 				<div class="control-group">
-				<input type="text" class="stock-field" value="" placeholder="name" name="name">
-<!--				<label class="login-field-icon fui-user" for="login-name"></label>-->
-				</div>
-				<div class="control-group">
-				<input type="float" class="stock-field" value=0.0 placeholder="buy below" name="buybelow">
-<!--				<label class="login-field-icon fui-lock" for="login-pass"></label>-->
-				</div>
-                                <div class="control-group">
-                                <div>Active</div>
-                                <div>
-                                <input type="radio" name="active" value=true checked> Yes<br>
-                                <input type="radio" name="active" value=false> No
-                                </div>
-                                <div>
-                                    <select name="category">
-                                    {% for category in subcategories %}
-                                    <option value="{{ category }}">{{category}}</option>
-                                    {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="control-group">
-                                    <input type="text" class="stock-field" value="" placeholder="Comments" name="comments">
-                                </div>
-                <input type="submit" value="Create Stock Tracker" class="btn btn-primary btn-large btn-block" >
-			    <br>
-			</div>
+		<div class="container-fluid">
+		    <div class="app-title">
+                        <h1>Add a new tracked stock</h1>
+                    </div>
+                    <div class="row col-md-12">
+                        <div class="col-md-1">
+                            <label class="formlabel">Symbol</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="stock-field" value="" placeholder="e.g. Cash or IBM" name="symbol">
+                        </div>
+                        <div class="col-md-1">
+                            <label class="formlabel">Name</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="stock-field" value="" placeholder="e.g. Starbucks" name="name">
+                        </div>
+                        <div class="col-md-1">
+                            <label class="formlabel">Buy Below</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="stock-field" value="" placeholder="0.00" name="buybelow">
+                        </div>
+                    </div>
+                    <div class="row col-md-12">
+                        <div class="col-md-1">
+                            <label class="formlabel">Active</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="radio" name="active" value=true checked> Yes<br>
+                            <input type="radio" name="active" value=false> No
+                        </div>
+                        <div class="col-md-1">
+                            <label class="formlabel">Category</label>
+                        </div>
+                        <div class="col-md-2">
+                            <select name="category">
+                            {% for category in subcategories %}
+                            <option value="{{ category }}">{{category}}</option>
+                            {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row col-md-12">
+                        <div class="col-md-2">
+                            <label class="formlabel">Comments</label>
+                        </div>
+                        <div class="col-md-10">
+                            <input type="text" class="commentfield" value="" placeholder="Any helpful information on why this stock is tracked" name="comments">
+                        </div>
+                    <div class="row col-md-12">
+                        <div class="col-md-3">
+                            <input type="submit" value="Create Stock Tracker" class="btn">
+                        </div>
+                        <div class="col-md-2">
+                            <a href="/" class="btn">Cancel</a>
+                        </div>
+                        <div class="col-md-7"></div>
+                    </div>
 		</div>
 	</div>
 </form>
+     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
  
 {% endblock %}
